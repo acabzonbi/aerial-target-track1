@@ -1,17 +1,26 @@
 erDiagram
+    REGION ||--|{ CITY : "включає"
     USER ||--o{ SUBSCRIPTION : "створює"
-    CITY ||--o{ SUBSCRIPTION : "відстежується в"
-    AIR_TARGET ||--o{ TRACK_POINT : "має позиції"
+    DATA_SOURCE }|--o{ AIR_TARGET : "повідомляє про"
+    CITY }o--o{ AIR_TARGET : "пов'язана з"
     AIR_TARGET ||--o{ THREAT_CALC : "оцінюється"
-    CITY ||--o{ THREAT_CALC : "під загрозою"
     THREAT_CALC ||--o{ NOTIFICATION : "створює"
     USER ||--o{ NOTIFICATION : "отримує"
+
+    CITY ||--o{ SUBSCRIPTION : "відстежується в"
+    CITY ||--o{ THREAT_CALC : "під загрозою"
+
+    REGION {
+        string region_id PK
+        string name
+    }
 
     CITY {
         string city_id PK
         string name
         float latitude
         float longitude
+        string region_id FK
     }
 
     USER {
@@ -27,21 +36,21 @@ erDiagram
 
     AIR_TARGET {
         string target_id PK
-        string status
-    }
-
-    TRACK_POINT {
-        string point_id PK
-        string target_id FK
+        string target_type
         float latitude
         float longitude
+    }
+
+    DATA_SOURCE {
+        string source_id PK
+        string name
     }
 
     THREAT_CALC {
         string calc_id PK
         string target_id FK
         string city_id FK
-        datetime calc_at
+        float calc_at
     }
 
     NOTIFICATION {
