@@ -7,7 +7,7 @@ erDiagram
     THREAT_CALC ||--o{ NOTIFICATION : "створює"
     USER ||--o{ NOTIFICATION : "отримує"
     SUBSCRIPTION ||--o{ NOTIFICATION : "створює"
-    
+
     CITY ||--o{ SUBSCRIPTION : "відстежується в"
     CITY ||--o{ THREAT_CALC : "під загрозою"
 
@@ -58,4 +58,5 @@ erDiagram
         string notification_id PK
         string user_id FK
         string calc_id FK
+        string notification_type
     }

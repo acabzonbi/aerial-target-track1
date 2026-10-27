@@ -47,6 +47,7 @@
 - notification_id (PK): унікальний ідентифікатор сповіщення
 - user_id (FK - USER): користувач, якому надіслано сповіщення
 - calc_id (FK - THREAT_CALC): розрахунок загрози, через яку створено сповіщення
+- notification_type: тип сповіщення(PUSH, telegram, alarm etc), string
 
 # Зв'язки
 - REGION - CITY: область має від 1 до N міст, місто належить рівно 1 області
