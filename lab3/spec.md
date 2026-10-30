@@ -72,6 +72,7 @@ USER відкриває форму openCreateForm()
 USER обирає місто selectCity("Львів"), вводить хибний радіус enterRadius(invalidRadius) і підтверджує submitSubscription()
 SubscriptionForm викликає createSubscription(userId, "Львів", invalidRadius)
 SubscriptionService знаходить місто findCityByName("Львів"), отримує City(id, name)
+SubscriptionService перевіряє радіус validateRadius(invalidRadius)
 
 alt:
   радіус валідний: підписка створюється за сценарієм 1 (в цьому сценарії не виконується)
@@ -80,13 +81,13 @@ alt:
 ### Сценарій 3: Місто не знайдено або не вибрано
 
 USER відкриває форму openCreateForm()
-USER вводить хибне місто enterCity(invalidCity), радіус enterRadius(30) і підтверджує submitSubscription()
+USER вводить хибне місто enterCity(invalidCity) (хибна назва або порожнє значення, тобто місто не вибрано), радіус enterRadius(30) і підтверджує submitSubscription()
 SubscriptionForm викликає createSubscription(userId, invalidCity, 30)
 SubscriptionService шукає місто findCityByName(invalidCity) - CityCatalog повертає City або null
 
 alt:
-  місто знайдено: підписка створюється за сценарієм 1 (в цьому сценарії не виконується)
-  місто не знайдено або не вибрано: SubscriptionService повертає CityNotFoundError, SUBSCRIPTION не створюється, SubscriptionForm показує повідомлення про помилку "Місто не знайдено"
+  місто знайдено: перевірка радіуса і збереження виконуються за сценаріями 1 і 2 (в цьому сценарії не виконується)
+  місто не знайдено або не вибрано: validateRadius() і save() не викликаються, SubscriptionService повертає CityNotFoundError, SUBSCRIPTION не створюється, SubscriptionForm показує повідомлення про помилку "Місто не знайдено"
 
 ## Аудит:
 
@@ -98,7 +99,7 @@ alt:
 
 2. Учасники діаграм і ER-модель не збігаються повністю. Із п'яти учасників лише USER, CityCatalog (CITY) і SubscriptionRepository (SUBSCRIPTION) мають зв'язок з ER-моделлю. SubscriptionForm і SubscriptionService відповідників не мають. Потрібно вказати що це інтерфейс та приклдана логіка.
 
-
+3. Кроки діаграм не повністю відповідають кроками Gherkin, а діаграми між собою неузгоджені. У діаграмі 2 немає validateRadius(): умова alt є, але виклику, що її перевіряє, немає. Gherkin 3 говорить "не знайдено або не вибрано", а діаграма покриває лише "введено хибне місто". Випадок "не вибрано" (порожнє поле) не показаний.
 
 
 

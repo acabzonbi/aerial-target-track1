@@ -23,6 +23,7 @@ sequenceDiagram
     activate C
     C-->>S: City(id, name)
     deactivate C
+    S->>S: validateRadius(invalidRadius)
 
     alt радіус валідний
         Note over S,R: підписка створюється за сценарієм 1

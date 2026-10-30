@@ -15,6 +15,7 @@ sequenceDiagram
     Note over F,S: Передумова - USER авторизований, userId береться з сесії
     F-->>U: renderForm()
     U->>F: enterCity(invalidCity)
+    Note over U,F: invalidCity - хибна назва або порожнє значення (місто не вибрано)
     U->>F: enterRadius(30)
     U->>F: submitSubscription()
     F->>S: createSubscription(userId, invalidCity, 30)
@@ -25,9 +26,9 @@ sequenceDiagram
     deactivate C
 
     alt місто знайдено
-        Note over S,R: підписка створюється за сценарієм 1
+        Note over S,R: перевірка радіуса і збереження - за сценаріями 1 і 2
     else місто не знайдено або не вибрано
-        Note over S,R: SUBSCRIPTION не створюється
+        Note over S,R: validateRadius() і save() не викликаються, SUBSCRIPTION не створюється
         S-->>F: CityNotFoundError
         F-->>U: showError("Місто не знайдено")
     end
