@@ -20,16 +20,12 @@ sequenceDiagram
     deactivate C
 
     alt радіус валідний
-        S->>R: save(userId, cityId, radiusKm)
-        activate R
-        R-->>S: Subscription(id)
-        deactivate R
-        S-->>F: SubscriptionCreated(id)
+        Note over S,R: підписка створюється за сценарієм 1
     else радіус хибний (не число, <= 0 або поза межами)
         Note over S,R: SUBSCRIPTION не створюється
         S-->>F: InvalidRadiusError
+        F-->>U: showError("Некоректний радіус")
     end
 
     deactivate S
-    F-->>U: showError("Некоректний радіус")
     deactivate F

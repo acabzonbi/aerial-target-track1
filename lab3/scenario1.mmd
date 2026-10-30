@@ -26,10 +26,11 @@ sequenceDiagram
         R-->>S: Subscription(id)
         deactivate R
         S-->>F: SubscriptionCreated(id)
+        F-->>U: showMessage("Підписку створено")
     else дані невалідні (див. сценарії 2 і 3)
         S-->>F: ValidationError
+        F-->>U: showError("Підписку не створено")
     end
 
     deactivate S
-    F-->>U: showMessage("Підписку створено")
     deactivate F

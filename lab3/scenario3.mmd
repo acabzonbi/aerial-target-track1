@@ -20,17 +20,12 @@ sequenceDiagram
     deactivate C
 
     alt місто знайдено
-        S->>S: validateRadius(30)
-        S->>R: save(userId, cityId, radiusKm=30)
-        activate R
-        R-->>S: Subscription(id)
-        deactivate R
-        S-->>F: SubscriptionCreated(id)
+        Note over S,R: підписка створюється за сценарієм 1
     else місто не знайдено або не вибрано
         Note over S,R: SUBSCRIPTION не створюється
         S-->>F: CityNotFoundError
+        F-->>U: showError("Місто не знайдено")
     end
 
     deactivate S
-    F-->>U: showError("Місто не знайдено")
     deactivate F

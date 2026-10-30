@@ -68,9 +68,8 @@ SubscriptionService шукає місто: findCityByName("Київ") у CityCat
 SubscriptionService перевіряє радіус validateRadius(20)
 
 alt:
-  місто знайдено і радіус валідний: save(userId, cityId, radiusKm=20) у SubscriptionRepository, повернення Subscription(id), відповідь SubscriptionCreated(id)
-  інакше: відповідь ValidationError (сценарії 2 і 3)
-SubscriptionForm показує повідомлення "Підписку створено"
+  місто знайдено і радіус валідний: save(userId, cityId, radiusKm=20) у SubscriptionRepository, повернення Subscription(id), відповідь SubscriptionCreated(id), SubscriptionForm показує повідомлення "Підписку створено"
+  інакше: відповідь ValidationError (сценарії 2 і 3), SubscriptionForm показує повідомлення про помилку "Підписку не створено"
 
 ### Сценарій 2: Некоректні вхідні дані радіуса
 
@@ -80,9 +79,8 @@ SubscriptionForm викликає createSubscription(userId, "Львів", inval
 SubscriptionService знаходить місто findCityByName("Львів"), отримує City(id, name)
 
 alt:
-  радіус валідний: save(...) у SubscriptionRepository (в цьому сценарії не виконується)
-  радіус хибний: SubscriptionService повертає InvalidRadiusError, SUBSCRIPTION не створюється
-SubscriptionForm показує повідомлення про помилку "Некоректний радіус"
+  радіус валідний: підписка створюється за сценарієм 1 (в цьому сценарії не виконується)
+  радіус хибний: SubscriptionService повертає InvalidRadiusError, SUBSCRIPTION не створюється, SubscriptionForm показує повідомлення про помилку "Некоректний радіус"
 
 ### Сценарій 3: Місто не знайдено або не вибрано
 
@@ -92,11 +90,16 @@ SubscriptionForm викликає createSubscription(userId, invalidCity, 30)
 SubscriptionService шукає місто findCityByName(invalidCity) - CityCatalog повертає City або null
 
 alt:
-  місто знайдено: validateRadius(30), save(userId, cityId, radiusKm=30) (в цьому сценарії не виконується)
-  місто не знайдено або не вибрано: SubscriptionService повертає CityNotFoundError, SUBSCRIPTION не створюється
-SubscriptionForm показує повідомлення про помилку "Місто не знайдено"
+  місто знайдено: підписка створюється за сценарієм 1 (в цьому сценарії не виконується)
+  місто не знайдено або не вибрано: SubscriptionService повертає CityNotFoundError, SUBSCRIPTION не створюється, SubscriptionForm показує повідомлення про помилку "Місто не знайдено"
+
+## Аудит:
 
 
+
+### Топ-3 розбіжності:
+
+1. Діаграми суперечать Gherkin і самі собі, у сценарії 1 після alt стоїть showMessage("Підписку створено"). Через це в гілці ValidationError користувач теж побачить "Підписку створено". У сценаріях 2 і 3 Gherkin каже "Тоді підписка не створюється", але в діаграмі є гілка зі save() та SubscriptionCreated(id), тобто підписка нібито може створитися. Після alt там showError(), тому в успішній гілці користувач побачив би помилку.
 
 
 
