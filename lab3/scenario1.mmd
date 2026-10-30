@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    actor U as USER
+    participant F as SubscriptionForm
+    participant S as SubscriptionService
+    participant C as CityCatalog (CITY)
+    participant R as SubscriptionRepository (SUBSCRIPTION)
+
+    U->>F: openCreateForm()
+    activate F
+    F-->>U: renderForm()
+    U->>F: selectCity("Київ")
+    U->>F: enterRadius(20)
+    U->>F: submitSubscription()
+    F->>S: createSubscription(userId, "Київ", 20)
+    activate S
+    S->>C: findCityByName("Київ")
+    activate C
+    C-->>S: City(id, name)
+    deactivate C
+    S->>S: validateRadius(20)
+
+    alt місто знайдено і радіус валідний
+        S->>R: save(userId, cityId, radiusKm=20)
+        activate R
+        R-->>S: Subscription(id)
+        deactivate R
+        S-->>F: SubscriptionCreated(id)
+    else дані невалідні (див. сценарії 2 і 3)
+        S-->>F: ValidationError
+    end
+
+    deactivate S
+    F-->>U: showMessage("Підписку створено")
+    deactivate F
