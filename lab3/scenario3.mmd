@@ -1,13 +1,18 @@
 sequenceDiagram
     autonumber
     actor U as USER
-    participant F as SubscriptionForm
-    participant S as SubscriptionService
-    participant C as CityCatalog (CITY)
-    participant R as SubscriptionRepository (SUBSCRIPTION)
+    box LightYellow Інтерфейс і логіка - поза ER
+        participant F as SubscriptionForm
+        participant S as SubscriptionService
+    end
+    box LightBlue Доступ до даних - сутності ER
+        participant C as CityCatalog (CITY)
+        participant R as SubscriptionRepository (SUBSCRIPTION)
+    end
 
     U->>F: openCreateForm()
     activate F
+    Note over F,S: Передумова - USER авторизований, userId береться з сесії
     F-->>U: renderForm()
     U->>F: enterCity(invalidCity)
     U->>F: enterRadius(30)
