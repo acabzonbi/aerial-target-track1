@@ -68,8 +68,8 @@ SubscriptionService шукає місто: findCityByName("Київ") у CityCat
 SubscriptionService перевіряє радіус validateRadius(20)
 
 alt:
-місто знайдено і радіус валідний: save(userId, cityId, radiusKm=20) у SubscriptionRepository, повернення Subscription(id), відповідь SubscriptionCreated(id)
-інакше: відповідь ValidationError (сценарії 2 і 3)
+  місто знайдено і радіус валідний: save(userId, cityId, radiusKm=20) у SubscriptionRepository, повернення Subscription(id), відповідь SubscriptionCreated(id)
+  інакше: відповідь ValidationError (сценарії 2 і 3)
 SubscriptionForm показує повідомлення "Підписку створено"
 
 ### Сценарій 2: Некоректні вхідні дані радіуса
@@ -80,9 +80,24 @@ SubscriptionForm викликає createSubscription(userId, "Львів", inval
 SubscriptionService знаходить місто findCityByName("Львів"), отримує City(id, name)
 
 alt:
-радіус валідний: save(...) у SubscriptionRepository (в цьому сценарії не виконується)
-радіус хибний: SubscriptionService повертає InvalidRadiusError, SUBSCRIPTION не створюється
+  радіус валідний: save(...) у SubscriptionRepository (в цьому сценарії не виконується)
+  радіус хибний: SubscriptionService повертає InvalidRadiusError, SUBSCRIPTION не створюється
 SubscriptionForm показує повідомлення про помилку "Некоректний радіус"
+
+### Сценарій 3: Місто не знайдено або не вибрано
+
+USER відкриває форму openCreateForm()
+USER вводить хибне місто enterCity(invalidCity), радіус enterRadius(30) і підтверджує submitSubscription()
+SubscriptionForm викликає createSubscription(userId, invalidCity, 30)
+SubscriptionService шукає місто findCityByName(invalidCity) - CityCatalog повертає City або null
+
+alt:
+  місто знайдено: validateRadius(30), save(userId, cityId, radiusKm=30) (в цьому сценарії не виконується)
+  місто не знайдено або не вибрано: SubscriptionService повертає CityNotFoundError, SUBSCRIPTION не створюється
+SubscriptionForm показує повідомлення про помилку "Місто не знайдено"
+
+
+
 
 
 
