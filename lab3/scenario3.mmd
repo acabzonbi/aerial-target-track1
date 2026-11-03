@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor U as USER
+    box LightYellow Інтерфейс і логіка - поза ER
+        participant F as SubscriptionForm
+        participant S as SubscriptionService
+    end
+    box LightBlue Доступ до даних - сутності ER
+        participant C as CityCatalog (CITY)
+        participant R as SubscriptionRepository (SUBSCRIPTION)
+    end
+
+    U->>F: openCreateForm()
+    activate F
+    Note over F,S: Передумова - USER авторизований, userId береться з сесії
+    F-->>U: renderForm()
+    U->>F: enterCity(invalidCity)
+    Note over U,F: invalidCity - хибна назва або порожнє значення (місто не вибрано)
+    U->>F: enterRadius(30)
+    U->>F: submitSubscription()
+    F->>S: createSubscription(userId, invalidCity, 30)
+    activate S
+    S->>C: findCityByName(invalidCity)
+    activate C
+    C-->>S: City | null
+    deactivate C
+
+    alt місто знайдено
+        Note over S,R: перевірка радіуса і збереження - за сценаріями 1 і 2
+    else місто не знайдено або не вибрано
+        Note over S,R: validateRadius() і save() не викликаються, SUBSCRIPTION не створюється
+        S-->>F: CityNotFoundError
+        F-->>U: showError("Місто не знайдено")
+    end
+
+    deactivate S
+    deactivate F

@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor U as USER
+    box LightYellow Інтерфейс і логіка - поза ER
+        participant F as SubscriptionForm
+        participant S as SubscriptionService
+    end
+    box LightBlue Доступ до даних - сутності ER
+        participant C as CityCatalog (CITY)
+        participant R as SubscriptionRepository (SUBSCRIPTION)
+    end
+
+    U->>F: openCreateForm()
+    activate F
+    Note over F,S: Передумова - USER авторизований, userId береться з сесії
+    F-->>U: renderForm()
+    U->>F: selectCity("Львів")
+    U->>F: enterRadius(invalidRadius)
+    U->>F: submitSubscription()
+    F->>S: createSubscription(userId, "Львів", invalidRadius)
+    activate S
+    S->>C: findCityByName("Львів")
+    activate C
+    C-->>S: City(id, name)
+    deactivate C
+    S->>S: validateRadius(invalidRadius)
+
+    alt радіус валідний
+        Note over S,R: підписка створюється за сценарієм 1
+    else радіус хибний (не число, <= 0 або поза межами)
+        Note over S,R: SUBSCRIPTION не створюється
+        S-->>F: InvalidRadiusError
+        F-->>U: showError("Некоректний радіус")
+    end
+
+    deactivate S
+    deactivate F
