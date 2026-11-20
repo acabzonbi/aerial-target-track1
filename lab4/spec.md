@@ -2,6 +2,7 @@
 
 ### Юнцов Олександр Олександрович ІМ-о51
 
+Обрана форма: Activity діаграма у Mermaid flowchart, де swimlanes реалізовано як subgraph (по одному на учасника).
 
 ## UC з лаби 2: Створювати підписки на міста
 
@@ -57,6 +58,27 @@
 
 
 ## Кроки процесу
+| # | Роль | Крок | Тип |
+|---|---|---|---|
+| 1 | USER | openCreateForm() | Початок |
+| 2 | SubscriptionForm | renderForm() | Дія |
+| 3 | USER | Обирає або вводить місто, вводить радіус (selectCity/enterCity, enterRadius) | Дія |
+| 4 | USER | submitSubscription() | Дія |
+| 5 | SubscriptionForm - SubscriptionService | createSubscription(userId, city, radius) | message 1 (M1) |
+| 6 | SubscriptionService | Приймає M1 і запускає паралельні гілки | Fork |
+| 7a | SubscriptionService - CityCatalog | findCityByName(city) | message 2 (M2) branch A |
+| 7b | CityCatalog - SubscriptionService | City(id, name) або null | message 3 (M3) branch A |
+| 7c | SubscriptionService | Очікує M3, таймаут T1 | Accept/таймаут branch A |
+| 8 | SubscriptionService | validateRadius(radius) | Дія branch B |
+| 9 | SubscriptionService | Об'єднує гілки | Join |
+| 10 | SubscriptionService | Перевіряє результати (D1, D2, D3) | Розгалуження |
+| 11 | SubscriptionService - SubscriptionRepository | save(userId, cityId, radiusKm) | message 4 (M4) |
+| 12 | SubscriptionRepository - SubscriptionService | Subscription(id) | message 5 (M5) |
+| 13 | SubscriptionService | Очікує M5, таймаут T2 | Accept/таймаут |
+| 14 | SubscriptionService - SubscriptionForm | SubscriptionCreated(id) | message 6 (M6) |
+| 15 | SubscriptionForm - USER | showMessage("Підписку створено"); USER бачить результат | Кінець (успіх) |
+| E | SubscriptionService - SubscriptionForm | Помилка (тип залежить від гілки) | message 7 (M7) |
+| E | SubscriptionForm - USER | showError(текст за типом помилки); USER бачить результат | Кінець (помилка) |
 
 ## Розгалуження
 
