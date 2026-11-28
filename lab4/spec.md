@@ -58,6 +58,7 @@
 
 
 ## Кроки процесу
+
 | # | Роль | Крок | Тип |
 |---|---|---|---|
 | 1 | USER | openCreateForm() | Початок |
@@ -82,7 +83,6 @@
 
 ## Розгалуження
 
-
 | id | умова | так | ні |
 |---|---|---|---|
 | D1 | M3 отримано до таймауту T1 | перейти до D2 | ServiceUnavailableError (M7), кінець(помилка) |
@@ -91,5 +91,18 @@
 | D4 | M5 отримано до таймауту T2 | M6 SubscriptionCreated(id), кінець(успіх) | SaveTimeoutError (M7), кінець (помилка) |
 
 ## Повідомлення
+
+| ID | Відправник - Одержувач | Зміст | Якщо є відповідь | Якщо відповіді немає |
+|---|---|---|---|---|
+| M1 | SubscriptionForm - SubscriptionService | createSubscription(userId, city, radius) | Сервіс виконує fork (відповідь на M1 надходить як M6 або M7) | Форма не отримує M6/M7: поведінка на боці UI не визначена (виходить за межі процесу) |
+| M2 | SubscriptionService - CityCatalog | findCityByName(city) | M3: City(id, name) або null, далі D2 | Таймаут T1, D1 = "ні": ServiceUnavailableError, підписка не створюється (припущення) |
+| M3 | CityCatalog - SubscriptionService | City(id, name) або null | Гілка A завершена, далі Join | Пізня відповідь після T1 ігнорується (припущення) |
+| M4 | SubscriptionService - SubscriptionRepository | save(userId, cityId, radiusKm) | M5: Subscription(id) | Таймаут T2, D4 = "ні": SaveTimeoutError; стан запису невідомий (припущення) |
+| M5 | SubscriptionRepository - SubscriptionService | Subscription(id) | Далі M6 | Дивитися M4 |
+| M6 | SubscriptionService - SubscriptionForm | SubscriptionCreated(id) | Форма показує "Підписку створено" | N/A (кінець процесу) |
+| M7 | SubscriptionService - SubscriptionForm | Помилка: ServiceUnavailableError, CityNotFoundError, InvalidRadiusError, SaveTimeoutError | Форма показує showError() | N/A (кінець процесу) |
+
+Таймаути (припущення): NFR5 обмежує обробку запиту 3 секундами, тому T1 + T2 <= 3с; пропонується T1 = 1с і T2 = 1,5с (0,5с запасу). Значення потрібно підтвердити.
+
 
 ## Аудит
